@@ -1,0 +1,52 @@
+# FALLBACK config — non-gated gpt2-small + Joseph Bloom residual SAEs.
+# Use this if you have NOT accepted the Gemma license / have no HF token.
+#   python steer.py config_gpt2.yaml
+#   python select_features2.py 10 config_gpt2.yaml   (writes config_mvp2.yaml)
+model:
+  name: gpt2
+  dtype: float32
+device: mps
+
+sae:
+  release: gpt2-small-res-jb
+  sae_id: blocks.7.hook_resid_pre
+  hook_name: blocks.7.hook_resid_pre
+  layer: 7
+
+features:
+  - name: auto_topfire_A
+    index: auto
+    elicit_prompts:
+      - "She slowly ran her fingers through her"
+      - "He reached out and gently touched her"
+      - "The wind blew softly against her"
+    neutral_prompts:
+      - "The weather today is"
+      - "My favorite thing about the city is"
+
+intervention:
+  amplify_s: 10.0
+  search_s_star: true
+  s_grid: [2.0, 5.0, 10.0, 20.0, 40.0]
+  coherence_mult: 3.0
+  c_grid: [0.0, 0.25, 0.5, 1.0, 2.0, 4.0]
+  random_control: true
+  use_error_term: true
+
+m_scale:
+  method: corpus_median_active
+  fallback_neuronpedia_max: null
+
+generate:
+  max_new_tokens: 32
+  temperature: 0.7
+  seed: 0
+  n_samples: 8
+
+scoring:
+  top_k_logit_lens: 20
+  concept_floor: 0.0                    # gpt2 auto-feature: keep all prompts (no concept floor)
+  perplexity_model: self                # gpt2 has no heavier same-family judge; self-proxy
+
+paths:
+  results_dir: results_gpt2          # separate dir so the gpt2 fallback never overwrites the gemma results/

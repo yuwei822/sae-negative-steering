@@ -1,0 +1,10 @@
+# Neutral prefixes (paper Table 6 style) — concept absent, used for the + "appears-from-nothing" demo.
+# Lines starting with # are comments. Concept-eliciting prompts live in config.yaml per feature.
+The weather today is
+My favorite thing about the city is
+Yesterday I went to the store and
+He opened the book and started to
+In the morning she usually likes to
+The meeting was scheduled for
+I think the best way to learn is
+They walked into the room and

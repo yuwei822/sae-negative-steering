@@ -1,0 +1,18 @@
+# Python / venv
+.venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# HF cache / tokens (never commit credentials)
+.cache/
+*.hf_token
+
+# Large model weights are fetched at runtime, not committed
+*.safetensors
+*.bin
+
+# Do NOT ignore the committed reproduction artifacts in results/ and results_v2/
+# (results.csv, *.png, generations.txt are intentionally tracked — see FIGURES.md).

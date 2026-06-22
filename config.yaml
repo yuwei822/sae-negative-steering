@@ -1,0 +1,65 @@
+# Plan 3 — Amplify vs Off vs Negative on output features (MVP) — PRIMARY config.
+#
+# Plan-faithful target: gemma-2-2b + Gemma-Scope, the hair feature (L22, F8827).
+# gemma-2-2b is a GATED HF model: before running, accept the license at
+#   https://huggingface.co/google/gemma-2-2b
+# then authenticate on this machine:  huggingface-cli login   (or export HF_TOKEN=...)
+# No token? use the non-gated fallback:  python steer.py config_gpt2.yaml
+model:
+  name: google/gemma-2-2b
+  dtype: float32          # 2B in fp32 ~10GB; fits 512GB Mac Studio and 64GB machines; bfloat16 also ok
+device: mps
+
+sae:
+  release: gemma-scope-2b-pt-res-canonical
+  sae_id: layer_22/width_16k/canonical
+  hook_name: blocks.22.hook_resid_post
+  layer: 22
+
+# Smoke-test feature: hair (Gemma-2-2B, L22, F8827; output score 0.808 in the paper).
+features:
+  - name: hair
+    index: 8827
+    elicit_prompts:                     # hair fires / concept present
+      - "She ran her fingers through her"
+      - "The barber picked up the scissors and began to cut his"
+      - "After the shower she grabbed a towel and started drying her"
+      - "Before the wedding the stylist spent an hour on her"
+      - "He looked in the mirror and combed his"
+      - "The wind blew strands of her long blonde"
+      - "She tied a ribbon around her daughter's braided"
+      - "The old man had lost most of the"
+      - "The shampoo commercial promised silky, shiny"
+      - "She dyed a bright pink streak into her"
+    neutral_prompts:                    # paper Table 6 style — concept absent (appears-from-nothing demo)
+      - "The weather today is"
+      - "My favorite thing about the city is"
+      - "Yesterday I went to the store and"
+
+intervention:
+  amplify_s: 10.0                       # default amplify factor if s* search is off
+  search_s_star: true                   # per-feature s* search on neutral prompts (paper-style)
+  s_grid: [2.0, 5.0, 10.0, 20.0, 40.0]  # amplify factors to search
+  coherence_mult: 3.0                   # s* must keep perplexity <= this x neutral baseline
+  c_grid: [0.0, 0.25, 0.5, 1.0, 2.0, 4.0]   # 0 = ablation; >0 = negative (OOD)
+  random_control: true                  # magnitude-matched random-direction control per c>0 (guard #2)
+  use_error_term: true
+
+m_scale:
+  method: corpus_median_active          # m_i = median active over elicit prompts
+  fallback_neuronpedia_max: null        # set to hair's Neuronpedia max activation to use it for a_max / m_i
+
+generate:
+  max_new_tokens: 32
+  temperature: 0.7
+  seed: 0
+  n_samples: 10                         # sampled generations per condition -> mean +/- std
+
+scoring:
+  top_k_logit_lens: 20
+  concept_floor: 0.02                    # min baseline p(l*) for a prompt to count the concept 'present' (floor guard)
+  perplexity_model: google/gemma-2-9b   # independent coherence judge (heavier, unbiased); 'self' for the 2B proxy
+  perplexity_judge_device: mps          # device for the judge; set 'cpu' if 9B + 2B together risk MPS OOM
+
+paths:
+  results_dir: results

@@ -1,0 +1,172 @@
+# Frozen 15-feature discovery panel that produced the paper's results_v2/ (Table 2 / Figures 1-2).
+# Reconstructed from the released results_v2/results.csv so the exact panel reproduces without
+# re-running the model-dependent selection. Regenerate from scratch with:
+#   python select_features2.py 15 config.yaml   (may drift slightly across library/model versions)
+model:
+  name: google/gemma-2-2b
+  dtype: float32
+device: mps
+sae:
+  release: gemma-scope-2b-pt-res-canonical
+  sae_id: layer_22/width_16k/canonical
+  hook_name: blocks.22.hook_resid_post
+  layer: 22
+features:
+- name: f4191
+  index: 4191
+  elicit_prompts:
+  - She seasoned the soup with a pinch of salt and ground black
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f8639
+  index: 8639
+  elicit_prompts:
+  - For breakfast she ordered a plate of scrambled
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f5568
+  index: 5568
+  elicit_prompts:
+  - In the final minute the striker scored the winning
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f610
+  index: 610
+  elicit_prompts:
+  - The librarian frowned and asked them to lower their
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f8437
+  index: 8437
+  elicit_prompts:
+  - On stage the musician picked up his electric
+  - In the school orchestra she has always played the
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f8998
+  index: 8998
+  elicit_prompts:
+  - 'She counted slowly: five, six, seven,'
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f7697
+  index: 7697
+  elicit_prompts:
+  - Before the photo she tied back her long brown
+  - He stepped out of the shower and combed his
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f2277
+  index: 2277
+  elicit_prompts:
+  - On the way home he bought a fresh loaf of
+  - At the bakery the warm smell came from a fresh loaf of
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f16160
+  index: 16160
+  elicit_prompts:
+  - The meeting dragged on for almost an entire
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f1162
+  index: 1162
+  elicit_prompts:
+  - He tightened the last bolt and started the car's
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f6833
+  index: 6833
+  elicit_prompts:
+  - She dipped her brush into the jar of bright yellow
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f12147
+  index: 12147
+  elicit_prompts:
+  - The campers gathered dry wood and lit a roaring
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f11214
+  index: 11214
+  elicit_prompts:
+  - She wrapped the birthday present in shiny silver
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f7505
+  index: 7505
+  elicit_prompts:
+  - Every Sunday the old priest read aloud from the holy
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+- name: f15097
+  index: 15097
+  elicit_prompts:
+  - She painted the bedroom wall a bright shade of
+  - At dusk the sunset turned the sky a deep
+  neutral_prompts:
+  - The weather today is
+  - My favorite thing about the city is
+  - Yesterday I went to the store and
+intervention:
+  amplify_s: 10.0
+  search_s_star: true
+  s_grid:
+  - 2.0
+  - 5.0
+  - 10.0
+  - 20.0
+  - 40.0
+  coherence_mult: 3.0
+  c_grid:
+  - 0.0
+  - 0.25
+  - 0.5
+  - 1.0
+  - 2.0
+  - 4.0
+  random_control: true
+  use_error_term: true
+m_scale:
+  method: corpus_median_active
+  fallback_neuronpedia_max: null
+generate:
+  max_new_tokens: 32
+  temperature: 0.7
+  seed: 0
+  n_samples: 10
+scoring:
+  top_k_logit_lens: 20
+  concept_floor: 0.02
+  perplexity_model: google/gemma-2-9b
+  perplexity_judge_device: mps
+paths:
+  results_dir: results_v2
