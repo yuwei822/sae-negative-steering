@@ -1,4 +1,4 @@
-# Plan 3 — Amplify vs Off vs Negative on output features
+# Amplify vs Off vs Negative on output features
 
 Three-way SAE-coefficient steering on a single **output feature**:
 `+` amplify (`a_i + s·a_max`), `0` ablate, `−` negative (`-c·m_i`, OOD).
